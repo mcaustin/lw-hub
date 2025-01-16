@@ -113,15 +113,6 @@ const networkPolicy = new oss.CfnSecurityPolicy(
         // - Configure VPC security groups
         AllowFromPublic: true,
 
-        /* Example of VPC access configuration:
-      SourceVPCEs: ['vpce-xxx'],
-      AllowFromPublic: false
-      */
-
-        /* Example of IP-based access:
-      SourceIPs: ['10.0.0.0/16'],
-      AllowFromPublic: false
-      */
       },
     ]),
   }
@@ -402,35 +393,7 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
   }
 );
 
-// // const indexName = "movie";
-// // const indexMapping = {
-// //   settings: {
-// //     number_of_shards: 1,
-// //     number_of_replicas: 0,
-// //   },
-// //   mappings: {
-// //     properties: {
-// //       id: {
-// //         type: "keyword",
-// //       },
-// //       title: {
-// //         type: "text",
-// //       },
-// //       description: {
-// //         type: "text",
-// //       },
-// //       releaseYear: {
-// //         type: "text",
-// //       },
-// //       releaseYear: {
-// //         type: "text",
-// //       },
-// //       releaseYear: {
-// //         type: "text",
-// //       },
-// //     },
-// //   },
-// // };
+
 
 // Create Log Group
 const logGroup = new LogGroup(openSearchStack, "LogGroup", {
@@ -517,4 +480,4 @@ new osis.CfnPipeline(
   }
 );
 
-// // Add dependencies using the node property
+
