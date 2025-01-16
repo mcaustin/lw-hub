@@ -1,17 +1,40 @@
-## My Project
+# AWS Amplify OpenSearch Integration for Movie Data
 
-TODO: Fill this README out!
+This project integrates AWS Amplify with OpenSearch Serverless to create a searchable movie database. It demonstrates how to set up a data pipeline from DynamoDB to OpenSearch using AWS services.
 
-Be sure to:
+The application allows users to create and search for movies using a React frontend powered by AWS Amplify. The backend utilizes DynamoDB for data storage and OpenSearch Serverless for efficient searching capabilities.
 
-* Change the title in this README
-* Edit your repository description on GitHub
+## Repository Structure
 
-## Security
+```
+.
+├── amplify/
+│   ├── auth/
+│   ├── backend.ts
+│   ├── data/
+│   │   ├── opensearch/
+│   │   ├── resource.ts
+│   │   ├── searchBlogResolver.js
+│   ├── storage/
+│   └── tsconfig.json
+├── src/
+│   ├── App.tsx
+│   └── main.tsx
+├── amplify.yml
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
+```
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+Key Files:
+- `amplify/backend.ts`: Defines the AWS backend resources
+- `amplify/data/resource.ts`: Configures the data models and API
+- `src/App.tsx`: Main React component for the frontend
+- `src/main.tsx`: Entry point for the React application
+- `amplify.yml`: Amplify build configuration
+- `package.json`: Project dependencies and scripts
+- `vite.config.ts`: Vite build configuration
 
-## License
+## Usage Instructions
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
-
+### Installation
