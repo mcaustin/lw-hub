@@ -1,17 +1,16 @@
+// External dependencies
 import { defineBackend } from "@aws-amplify/backend";
+import * as YAML from "yaml";
+import * as cdk from "aws-cdk-lib";
+import { RemovalPolicy, Stack } from "aws-cdk-lib";
+import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
+import * as iam from "aws-cdk-lib/aws-iam";
+import { LogGroup } from "aws-cdk-lib/aws-logs";
+import * as osis from "aws-cdk-lib/aws-osis";
+import * as oss from "aws-cdk-lib/aws-opensearchserverless";
 import { auth } from "./auth/resource";
 import { data } from "./data/resource";
 import { storage } from "./storage/resource";
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
-import * as oss from "aws-cdk-lib/aws-opensearchserverless";
-import * as iam from "aws-cdk-lib/aws-iam";
-import * as cdk from "aws-cdk-lib";
-import { Stack } from "aws-cdk-lib";
-import { LogGroup } from "aws-cdk-lib/aws-logs";
-import { RemovalPolicy } from "aws-cdk-lib";
-import * as osis from "aws-cdk-lib/aws-osis";
-import * as YAML from "yaml";
-
 
 const backend = defineBackend({
   auth,
@@ -264,7 +263,7 @@ const s3ExportPolicy = new iam.PolicyStatement({
     // Required for setting object permissions
     "s3:PutObjectAcl",
   ],
-  resources: [`${s3BucketArn}`,`${s3BucketArn}/${tableName}/*`],
+  resources: [`${s3BucketArn}`, `${s3BucketArn}/${tableName}/*`],
 });
 
 /**
@@ -337,7 +336,6 @@ openSearchIntegrationPipelineRole.addToPolicy(
     ],
   })
 );
-
 
 /**
  * Creates a data access policy for OpenSearch Serverless
@@ -493,7 +491,6 @@ function createOpenSearchTemplate(config: OpenSearchConfig): string {
   };
   return YAML.stringify(template);
 }
-
 
 const openSearchTemplate = createOpenSearchTemplate({
   tableArn: tableArn,
