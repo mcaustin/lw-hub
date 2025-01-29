@@ -1,107 +1,182 @@
-import { useEffect, useState } from "react";
-import type { Schema } from "../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
+import React, { useEffect, useState, useCallback } from "react";
+import { Authenticator } from "@aws-amplify/ui-react";
+import { Amplify } from "aws-amplify";
+import outputs from "../amplify_outputs.json";
+import { generateClient } from "aws-amplify/api";
+import { Schema } from "../amplify/data/resource";
 
-const client = generateClient<Schema>();
+// Configure Amplify
+Amplify.configure(outputs);
 
-function App() {
-  const [movies, setMovies] = useState<Array<Schema["Movie"]["type"]>>([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+const client = generateClient<Schema>({
+  authMode: "apiKey",
+});
 
-  useEffect(() => {
-    // Fetch movies when component mounts
-    fetchMovies();
+// SearchBar Component
+interface SearchBarProps {
+  query: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSearch: () => void;
+  isLoading: boolean;
+}
 
-    // Subscribe to real-time updates
-    const sub = client.models.Movie.observeQuery().subscribe({
-      next: ({ items }) => setMovies([...items]),
-    });
+const SearchBar: React.FC<SearchBarProps> = ({
+  query,
+  onChange,
+  onSearch,
+  isLoading,
+}) => (
+  <div className="search-bar">
+    <input
+      type="text"
+      value={query}
+      onChange={onChange}
+      onKeyPress={(e) => e.key === "Enter" && onSearch()}
+      placeholder="Search for movies..."
+      className="search-input"
+      disabled={isLoading}
+    />
+    <button
+      onClick={onSearch}
+      disabled={isLoading}
+      className={`search-button ${isLoading ? "loading" : ""}`}
+    >
+      {isLoading ? "Searching..." : "Search"}
+    </button>
+  </div>
+);
 
-    return () => sub.unsubscribe();
-  }, []);
+// MovieCard Component
+interface MovieCardProps {
+  movie: { title: string; description: string };
+}
 
-  async function fetchMovies() {
+const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
+  <div className="movie-card">
+    <div className="overlay">
+      <h3 className="movie-title">{movie.title}</h3>
+      <p className="movie-description">{movie.description}</p>
+    </div>
+  </div>
+);
+
+// MovieCarousel Component
+interface MovieCarouselProps {
+  title: string;
+  movies: {
+    id: number;
+    title: string;
+    description: string;
+    posterUrl: string;
+  }[];
+}
+
+const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies }) => (
+  <section className="movie-carousel">
+    <h2 className="carousel-title">{title}</h2>
+    <div className="carousel-container">
+      {movies.map((movie) => (
+        <div key={movie.id} className="carousel-item">
+          <MovieCard movie={movie} />
+        </div>
+      ))}
+    </div>
+  </section>
+);
+
+// Main MovieList Component
+const MovieList: React.FC = () => {
+  const [movies, setMovies] = useState<any[]>([]);
+  const [filteredMovies, setFilteredMovies] = useState<any[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  // Fetch movies from API
+  const fetchMovies = async () => {
+    setIsLoading(true);
+    setError("");
     try {
       const { data } = await client.models.Movie.list();
-      setMovies(data);
-    } catch (error) {
-      console.error("Error fetching movies:", error);
+      setMovies(data); // Set all movies
+      setFilteredMovies(data); // Set filtered movies to all fetched movies initially
+    } catch (err) {
+      console.error("Error fetching movies:", err);
+      setError("Failed to fetch movies. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  };
 
-  async function createMovie(e: React.FormEvent) {
-    e.preventDefault();
+  // Handle search logic
+  const handleSearch = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
     try {
-      if (!title.trim() || !description.trim()) return;
-
-      await client.models.Movie.create({
-        title: title,
-        description: description,
-      });
-
-      // Clear form
-      setTitle("");
-      setDescription("");
-    } catch (error) {
-      console.error("Error creating movie:", error);
+      if (!searchQuery.trim()) {
+        setFilteredMovies(movies); // Reset to all movies if search query is empty
+        return;
+      }
+      const { data } = await client.queries.searchMovie({ title: searchQuery });
+      setFilteredMovies(data); // Update with the search results
+    } catch (err) {
+      console.error("Error searching movies:", err);
+      setError("Search failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-  }
+  }, [movies, searchQuery]);
 
-  async function deleteMovie(id: string) {
-    try {
-      await client.models.Movie.delete({ id: id });
-    } catch (error) {
-      console.error("Error deleting movie:", error);
-    }
-  }
+  useEffect(() => {
+    fetchMovies(); // Fetch all movies when the component mounts
+  }, []);
 
   return (
-    <main className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Movie Collection</h1>
-
-      {/* Create Movie Form */}
-      <form onSubmit={createMovie} className="mb-6">
-        <div className="flex flex-col gap-4 max-w-md">
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Movie title"
-            className="p-2 border rounded"
+    <main className="main-container">
+      <div className="content">
+        <SearchBar
+          query={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onSearch={handleSearch}
+          isLoading={isLoading}
+        />
+        {error && <div className="error-message">{error}</div>}
+        {isLoading ? (
+          <div className="loading-message">Loading...</div>
+        ) : (
+          <MovieCarousel
+            title="All Movies"
+            movies={filteredMovies} // Show all the filtered movies
           />
-          <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Movie description"
-            className="p-2 border rounded"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
-          >
-            Add Movie
-          </button>
-        </div>
-      </form>
-
-      {/* Movie List */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {movies.map((movie) => (
-          <div key={movie.id} className="border p-4 rounded shadow">
-            <h2 className="text-xl font-semibold">{movie.title}</h2>
-            <p className="mt-2">{movie.description}</p>
-            <button
-              onClick={() => movie.id && deleteMovie(movie.id)}
-              className="mt-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
-            >
-              Delete
-            </button>
-          </div>
-        ))}
+        )}
       </div>
     </main>
   );
-}
+};
+
+// App Component
+const App: React.FC = () => {
+  return (
+    <Authenticator>
+      {({ signOut, user }) => (
+        <div className="app-container">
+          <header className="header">
+            <div className="header-content">
+              <h1 className="header-title">Movie Collection</h1>
+              <div className="user-info">
+                {/* <span className="username">{user?.username}</span> */}
+                <button onClick={signOut} className="signout-button">
+                  Sign out
+                </button>
+              </div>
+            </div>
+          </header>
+
+          <MovieList />
+        </div>
+      )}
+    </Authenticator>
+  );
+};
 
 export default App;

@@ -13,6 +13,7 @@ const schema = a.schema({
     })
     .authorization((allow) => [
       allow.owner(),
+      allow.authenticated().to(["read"]),
       allow.publicApiKey().to(["read"]),
     ]),
 
@@ -22,7 +23,7 @@ const schema = a.schema({
       title: a.string(),
     })
     .returns(a.ref("Movie").array())
-    .authorization((allow) => [allow.publicApiKey()])
+    .authorization((allow) => [allow.authenticated(), allow.publicApiKey()])
     .handler(
       a.handler.custom({
         entry: "./searchMovieResolver.js",

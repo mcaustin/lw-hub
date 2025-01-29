@@ -61,18 +61,16 @@ const encryptionPolicy = new oss.CfnSecurityPolicy(
           ResourceType: "collection",
 
           // Define which collections this policy affects
-          // Wildcard (*) ensures policy applies to all indices within collection
-          Resource: [`collection/${collectionName}*`],
+          Resource: [`collection/${collectionName}`],
         },
       ],
       // Use AWS owned KMS key for encryption
       // Alternative: Set to false and specify 'KmsKeyId' for customer managed key
       AWSOwnedKey: true,
 
-      /* Example of customer managed key configuration:
-      AWSOwnedKey: false,
-      KmsKeyId: 'arn:aws:kms:region:account:key/key-id'
-      */
+      // Example of customer managed key configuration:
+      //AWSOwnedKey: false,
+      //KmsKeyId: 'arn:aws:kms:region:account:key/key-id'
     }),
   }
 );
@@ -112,7 +110,6 @@ const networkPolicy = new oss.CfnSecurityPolicy(
         // - Specify IP ranges
         // - Configure VPC security groups
         AllowFromPublic: true,
-
       },
     ]),
   }
@@ -121,7 +118,7 @@ const networkPolicy = new oss.CfnSecurityPolicy(
 // Create OpenSearch Serverless Collection
 const openSearchServerlessCollection = new oss.CfnCollection(
   openSearchStack,
-  "OpenSearchServerlessCollection1",
+  "OpenSearchServerlessCollection",
   {
     name: collectionName,
     description: "DynamoDB to OpenSearch Pipeline ETL Integration",
@@ -286,8 +283,8 @@ const openSearchCollectionPolicy = new iam.PolicyStatement({
 
   resources: [
     openSearchServerlessCollection.attrArn,
-    //`${openSearchServerlessCollection.attrArn}/*`,
-    //`arn:aws:aoss:${region}:${openSearchStack.account}:collection/*`,
+    `${openSearchServerlessCollection.attrArn}/*`,
+    `arn:aws:aoss:${region}:${openSearchStack.account}:collection/*`,
   ],
 });
 
@@ -393,11 +390,9 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
   }
 );
 
-
-
 // Create Log Group
 const logGroup = new LogGroup(openSearchStack, "LogGroup", {
-  logGroupName: "/aws/vendedlogs/OpenSearchServerlessService/pipelines/2",
+  logGroupName: "/aws/vendedlogs/OpenSearchServerlessService/pipelines/dev",
   removalPolicy: RemovalPolicy.DESTROY,
 });
 
@@ -479,5 +474,3 @@ new osis.CfnPipeline(
     },
   }
 );
-
-
