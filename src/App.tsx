@@ -160,7 +160,7 @@ const MovieList: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Authenticator>
-      {({ signOut, user }) => (
+      {({ signOut }) => (
         <div className="app-container">
           <header className="header">
             <div className="header-content">
