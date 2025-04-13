@@ -26,15 +26,15 @@ const tableArn = backend.data.resources.tables["Movie"].tableArn;
 const s3BucketArn = backend.storage.resources.bucket.bucketArn;
 
 // Get reference to the Movie table from Amplify resources
-const movieTable =
-  backend.data.resources.cfnResources.amplifyDynamoDbTables["Movie"];
+// const movieTable =
+//   backend.data.resources.cfnResources.amplifyDynamoDbTables["Movie"];
 
-//Enable Point-in-Time Recovery (PITR)
-movieTable.pointInTimeRecoveryEnabled = true;
-//Configure DynamoDB Streams
-movieTable.streamSpecification = {
-  streamViewType: dynamodb.StreamViewType.NEW_IMAGE,
-};
+// //Enable Point-in-Time Recovery (PITR)
+// movieTable.pointInTimeRecoveryEnabled = true;
+// //Configure DynamoDB Streams
+// movieTable.streamSpecification = {
+//   streamViewType: dynamodb.StreamViewType.NEW_IMAGE,
+// };
 
 /**
  * Create Encryption Policy for OpenSearch Serverless
@@ -180,19 +180,19 @@ const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
  * - Checking backup capabilities
  * - Initiating table exports
  */
-const dynamoDBExportJobPolicy = new iam.PolicyStatement({
-  sid: "allowRunExportJob",
-  effect: iam.Effect.ALLOW,
-  actions: [
-    // Required for getting table metadata before export
-    "dynamodb:DescribeTable",
-    // Required for verifying point-in-time recovery status
-    "dynamodb:DescribeContinuousBackups",
-    // Required for initiating table export operation
-    "dynamodb:ExportTableToPointInTime",
-  ],
-  resources: [tableArn],
-});
+// const dynamoDBExportJobPolicy = new iam.PolicyStatement({
+//   sid: "allowRunExportJob",
+//   effect: iam.Effect.ALLOW,
+//   actions: [
+//     // Required for getting table metadata before export
+//     "dynamodb:DescribeTable",
+//     // Required for verifying point-in-time recovery status
+//     "dynamodb:DescribeContinuousBackups",
+//     // Required for initiating table export operation
+//     "dynamodb:ExportTableToPointInTime",
+//   ],
+//   resources: [tableArn],
+// });
 
 /**
  * Policy for monitoring export job status
@@ -201,12 +201,12 @@ const dynamoDBExportJobPolicy = new iam.PolicyStatement({
  * - Monitoring export progress
  * Note: Uses wildcard for export operations as export IDs are dynamically generated
  */
-const dynamoDBExportCheckPolicy = new iam.PolicyStatement({
-  sid: "allowCheckExportjob",
-  effect: iam.Effect.ALLOW,
-  actions: ["dynamodb:DescribeExport"],
-  resources: [`${tableArn}/export/*`],
-});
+// const dynamoDBExportCheckPolicy = new iam.PolicyStatement({
+//   sid: "allowCheckExportjob",
+//   effect: iam.Effect.ALLOW,
+//   actions: ["dynamodb:DescribeExport"],
+//   resources: [`${tableArn}/export/*`],
+// });
 
 /**
  * Policy for DynamoDB Stream operations
@@ -216,19 +216,19 @@ const dynamoDBExportCheckPolicy = new iam.PolicyStatement({
  * - Managing stream iterators
  * Required for real-time data synchronization
  */
-const dynamoDBStreamPolicy = new iam.PolicyStatement({
-  sid: "allowReadFromStream",
-  effect: iam.Effect.ALLOW,
-  actions: [
-    // Required for getting stream metadata
-    "dynamodb:DescribeStream",
-    // Required for reading actual records from the stream
-    "dynamodb:GetRecords",
-    // Required for managing stream position
-    "dynamodb:GetShardIterator",
-  ],
-  resources: [`${tableArn}/stream/*`],
-});
+// const dynamoDBStreamPolicy = new iam.PolicyStatement({
+//   sid: "allowReadFromStream",
+//   effect: iam.Effect.ALLOW,
+//   actions: [
+//     // Required for getting stream metadata
+//     "dynamodb:DescribeStream",
+//     // Required for reading actual records from the stream
+//     "dynamodb:GetRecords",
+//     // Required for managing stream position
+//     "dynamodb:GetShardIterator",
+//   ],
+//   resources: [`${tableArn}/stream/*`],
+// });
 
 /**
  * Policy for S3 operations during export
@@ -239,21 +239,21 @@ const dynamoDBStreamPolicy = new iam.PolicyStatement({
  * - Setting object ACLs
  * Scoped to specific export path for security
  */
-const s3ExportPolicy = new iam.PolicyStatement({
-  sid: "allowReadAndWriteToS3ForExport",
-  effect: iam.Effect.ALLOW,
-  actions: [
-    // Required for reading exported data
-    "s3:GetObject",
-    // Required for handling failed uploads
-    "s3:AbortMultipartUpload",
-    // Required for writing export files
-    "s3:PutObject",
-    // Required for setting object permissions
-    "s3:PutObjectAcl",
-  ],
-  resources: [`${s3BucketArn}`, `${s3BucketArn}/${tableName}/*`],
-});
+// const s3ExportPolicy = new iam.PolicyStatement({
+//   sid: "allowReadAndWriteToS3ForExport",
+//   effect: iam.Effect.ALLOW,
+//   actions: [
+//     // Required for reading exported data
+//     "s3:GetObject",
+//     // Required for handling failed uploads
+//     "s3:AbortMultipartUpload",
+//     // Required for writing export files
+//     "s3:PutObject",
+//     // Required for setting object permissions
+//     "s3:PutObjectAcl",
+//   ],
+//   resources: [`${s3BucketArn}`, `${s3BucketArn}/${tableName}/*`],
+// });
 
 /**
  * Policy for OpenSearch domain access
@@ -290,41 +290,41 @@ const openSearchCollectionPolicy = new iam.PolicyStatement({
 });
 
 // Create base role with OpenSearch Ingestion managed policy
-const openSearchIntegrationPipelineRole = new iam.Role(
-  openSearchStack,
-  "OpenSearchIntegrationPipelineRole2",
-  {
-    assumedBy: new iam.ServicePrincipal("osis-pipelines.amazonaws.com"),
-    managedPolicies: [
-      iam.ManagedPolicy.fromAwsManagedPolicyName(
-        "AmazonOpenSearchIngestionFullAccess"
-      ),
-    ],
-  }
-);
+// const openSearchIntegrationPipelineRole = new iam.Role(
+//   openSearchStack,
+//   "OpenSearchIntegrationPipelineRole2",
+//   {
+//     assumedBy: new iam.ServicePrincipal("osis-pipelines.amazonaws.com"),
+//     managedPolicies: [
+//       iam.ManagedPolicy.fromAwsManagedPolicyName(
+//         "AmazonOpenSearchIngestionFullAccess"
+//       ),
+//     ],
+//   }
+// );
 
-openSearchIntegrationPipelineRole.addToPolicy(dynamoDBExportJobPolicy);
-openSearchIntegrationPipelineRole.addToPolicy(dynamoDBExportCheckPolicy);
-openSearchIntegrationPipelineRole.addToPolicy(dynamoDBStreamPolicy);
-openSearchIntegrationPipelineRole.addToPolicy(s3ExportPolicy);
-openSearchIntegrationPipelineRole.addToPolicy(openSearchCollectionPolicy);
+// openSearchIntegrationPipelineRole.addToPolicy(dynamoDBExportJobPolicy);
+// openSearchIntegrationPipelineRole.addToPolicy(dynamoDBExportCheckPolicy);
+// openSearchIntegrationPipelineRole.addToPolicy(dynamoDBStreamPolicy);
+// openSearchIntegrationPipelineRole.addToPolicy(s3ExportPolicy);
+// openSearchIntegrationPipelineRole.addToPolicy(openSearchCollectionPolicy);
 
-openSearchIntegrationPipelineRole.addToPolicy(
-  new iam.PolicyStatement({
-    effect: iam.Effect.ALLOW,
-    actions: [
-      "logs:CreateLogGroup",
-      "logs:CreateLogStream",
-      "logs:PutLogEvents",
-      "logs:DescribeLogGroups",
-      "logs:DescribeLogStreams",
-    ],
-    resources: [
-      `arn:aws:logs:${region}:${openSearchStack.account}:log-group:/aws/opensearchserverless/*`,
-      `arn:aws:logs:${region}:${openSearchStack.account}:log-group:/aws/opensearchserverless/*:log-stream:*`,
-    ],
-  })
-);
+// openSearchIntegrationPipelineRole.addToPolicy(
+//   new iam.PolicyStatement({
+//     effect: iam.Effect.ALLOW,
+//     actions: [
+//       "logs:CreateLogGroup",
+//       "logs:CreateLogStream",
+//       "logs:PutLogEvents",
+//       "logs:DescribeLogGroups",
+//       "logs:DescribeLogStreams",
+//     ],
+//     resources: [
+//       `arn:aws:logs:${region}:${openSearchStack.account}:log-group:/aws/opensearchserverless/*`,
+//       `arn:aws:logs:${region}:${openSearchStack.account}:log-group:/aws/opensearchserverless/*:log-stream:*`,
+//     ],
+//   })
+// );
 
 /**
  * Creates a data access policy for OpenSearch Serverless
@@ -381,7 +381,7 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
         ],
         Principal: [
           // ETL Pipeline role
-          openSearchIntegrationPipelineRole.roleArn,
+          //openSearchIntegrationPipelineRole.roleArn,
           `arn:aws:iam::${openSearchStack.account}:role/Admin`,
           // AppSync HTTPDataSource role
           httpDataSourceRoleArn,
@@ -451,27 +451,27 @@ function createOpenSearchTemplate(config: OpenSearchConfig): string {
   return YAML.stringify(template);
 }
 
-const openSearchTemplate = createOpenSearchTemplate({
-  tableArn: tableArn,
-  bucketName: backend.storage.resources.bucket.bucketName,
-  region: region,
-  tableName: tableName,
-  pipelineRoleArn: openSearchIntegrationPipelineRole.roleArn,
-  openSearchEndpoint: openSearchServerlessCollection.attrCollectionEndpoint,
-});
+// const openSearchTemplate = createOpenSearchTemplate({
+//   tableArn: tableArn,
+//   bucketName: backend.storage.resources.bucket.bucketName,
+//   region: region,
+//   tableName: tableName,
+//   pipelineRoleArn: openSearchIntegrationPipelineRole.roleArn,
+//   openSearchEndpoint: openSearchServerlessCollection.attrCollectionEndpoint,
+// });
 
-//OpenSearch Pipeline Definition
-new osis.CfnPipeline(
-  openSearchStack,
-  "OpenSearchServerlessIntegrationPipeline",
-  {
-    maxUnits: 4,
-    minUnits: 1,
-    pipelineConfigurationBody: openSearchTemplate,
-    pipelineName: "dynamodb-integration",
-    logPublishingOptions: {
-      isLoggingEnabled: true,
-      cloudWatchLogDestination: { logGroup: logGroup.logGroupName },
-    },
-  }
-);
+// //OpenSearch Pipeline Definition
+// new osis.CfnPipeline(
+//   openSearchStack,
+//   "OpenSearchServerlessIntegrationPipeline",
+//   {
+//     maxUnits: 4,
+//     minUnits: 1,
+//     pipelineConfigurationBody: openSearchTemplate,
+//     pipelineName: "dynamodb-integration",
+//     logPublishingOptions: {
+//       isLoggingEnabled: true,
+//       cloudWatchLogDestination: { logGroup: logGroup.logGroupName },
+//     },
+//   }
+// );
