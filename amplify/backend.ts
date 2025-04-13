@@ -156,7 +156,7 @@ const openSearchDataSource = backend.data.addHttpDataSource(
 openSearchDataSource.grantPrincipal.addToPrincipalPolicy(
   new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
-    actions: ["aoss:APIAccessAll"],
+    actions: ["aoss:APIAccessAll", "aoss:BatchGetCollection"],
     resources: [
       // Grant access to the specific collection
       openSearchServerlessCollection.attrArn,
@@ -350,6 +350,7 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
             ResourceType: "collection",
             Resource: [`collection/${collectionName}`],
             Permission: [
+              "aoss:BatchGetCollection",
               "aoss:CreateCollectionItems",
               "aoss:DeleteCollectionItems",
               "aoss:UpdateCollectionItems",
@@ -369,6 +370,7 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
             ResourceType: "index",
             Resource: [`index/${collectionName}/*`],
             Permission: [
+              "aoss:BatchGetCollection",
               "aoss:ReadDocument",
               "aoss:WriteDocument",
               "aoss:CreateIndex",
