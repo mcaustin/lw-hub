@@ -118,7 +118,9 @@ const MovieList: React.FC = () => {
         return;
       }
       const { data } = await client.queries.searchMovie({ title: searchQuery });
-      setFilteredMovies(data); // Update with the search results
+      if (data) {
+        setFilteredMovies(data!); // Update with the search results
+      }
     } catch (err) {
       console.error("Error searching movies:", err);
       setError("Search failed. Please try again.");
