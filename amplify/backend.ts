@@ -284,7 +284,7 @@ const openSearchCollectionPolicy = new iam.PolicyStatement({
   resources: [
     openSearchServerlessCollection.attrArn,
     `${openSearchServerlessCollection.attrArn}/*`,
-    `arn:aws:aoss:${region}:${openSearchStack.account}:collection/*`,
+    `*`,
   ],
 });
 
