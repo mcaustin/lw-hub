@@ -156,12 +156,13 @@ const openSearchDataSource = backend.data.addHttpDataSource(
 openSearchDataSource.grantPrincipal.addToPrincipalPolicy(
   new iam.PolicyStatement({
     effect: iam.Effect.ALLOW,
-    actions: ["aoss:APIAccessAll", "aoss:BatchGetCollection"],
+    actions: ["aoss:*"],
     resources: [
       // Grant access to the specific collection
       openSearchServerlessCollection.attrArn,
       // Grant access to all indices within the collection
       `${openSearchServerlessCollection.attrArn}/*`,
+      "*"
     ],
   })
 );
