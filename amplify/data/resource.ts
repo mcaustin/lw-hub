@@ -1,21 +1,21 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a.schema({
-  // Movie: a
-  //   .model({
-  //     title: a.string().required(),
-  //     description: a.string(),
-  //     releaseYear: a.integer(),
-  //     director: a.string(),
-  //     actors: a.string().array(),
-  //     genre: a.string(),
-  //     rating: a.float(),
-  //   })
-  //   .authorization((allow) => [
-  //     allow.owner(),
-  //     allow.authenticated().to(["read"]),
-  //     allow.publicApiKey().to(["read"]),
-  //   ]),
+  Movie: a
+    .model({
+      title: a.string().required(),
+      description: a.string(),
+      releaseYear: a.integer(),
+      director: a.string(),
+      actors: a.string().array(),
+      genre: a.string(),
+      rating: a.float(),
+    })
+    .authorization((allow) => [
+      allow.owner(),
+      allow.authenticated().to(["read"]),
+      allow.publicApiKey().to(["read"]),
+    ]),
 
   searchMovie: a
     .query()
