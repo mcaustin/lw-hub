@@ -7,10 +7,7 @@ import { util } from "@aws-appsync/utils";
  */
 
 export function request(ctx) {
- 
-
   return {
-    version: "2018-05-29",
     method: "GET",
     params: {
       headers: {
@@ -20,7 +17,7 @@ export function request(ctx) {
         q: ctx.args.q ,
       },
     },
-    //resourcePath: `/base/_search`,
+    resourcePath: "/",
   };
 }
 /**

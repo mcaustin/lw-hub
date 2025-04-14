@@ -97,9 +97,9 @@ const MovieList: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      const { data } = await client.models.Base.list();
-      setMovies(data); // Set all movies
-      setFilteredMovies(data); // Set filtered movies to all fetched movies initially
+      //const { data } = await client.models.Base.list();
+      setMovies([]); // Set all movies
+      setFilteredMovies([]); // Set filtered movies to all fetched movies initially
     } catch (err) {
       console.error("Error fetching bases:", err);
       setError("Failed to fetch bases. Please try again.");
