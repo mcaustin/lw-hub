@@ -103,6 +103,13 @@ const networkPolicy = new oss.CfnSecurityPolicy(
             // Define which collections this policy affects
             Resource: [`collection/${collectionName}`],
           },
+          {
+            // Specify resource type this network policy applies to
+            ResourceType: "dashboard",
+
+            // Define which collections this policy affects
+            Resource: [`collection/${collectionName}`],
+          },
         ],
         // Allow public access to the collection
         // WARNING: For production, consider restricting access:
@@ -110,6 +117,7 @@ const networkPolicy = new oss.CfnSecurityPolicy(
         // - Specify IP ranges
         // - Configure VPC security groups
         AllowFromPublic: true,
+        
       },
     ]),
   }
