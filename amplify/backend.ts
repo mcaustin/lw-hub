@@ -389,6 +389,7 @@ const dataAccessPolicy = new oss.CfnAccessPolicy(
           // ETL Pipeline role
           //openSearchIntegrationPipelineRole.roleArn,
           `arn:aws:iam::${openSearchStack.account}:role/Admin`,
+          `arn:aws:iam::${openSearchStack.account}:user/localadmin`,
           // AppSync HTTPDataSource role
           httpDataSourceRoleArn,
         ],
