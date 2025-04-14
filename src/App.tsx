@@ -32,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       value={query}
       onChange={onChange}
       onKeyPress={(e) => e.key === "Enter" && onSearch()}
-      placeholder="Search for movies..."
+      placeholder="Search for player names..."
       className="search-input"
       disabled={isLoading}
     />
@@ -48,14 +48,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 // MovieCard Component
 interface MovieCardProps {
-  movie: { title: string; description: string };
+  movie: { name: string; x: number; y: number; warzone: number };
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
   <div className="movie-card">
     <div className="overlay">
-      <h3 className="movie-title">{movie.title}</h3>
-      <p className="movie-description">{movie.description}</p>
+      <h3 className="movie-title">{movie.name}</h3>
+      <p className="movie-description">X:{movie.x} Y:{movie.y} Warzone:{movie.warzone}</p>
     </div>
   </div>
 );
@@ -64,10 +64,10 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
 interface MovieCarouselProps {
   title: string;
   movies: {
-    id: number;
-    title: string;
-    description: string;
-    posterUrl: string;
+    name: string;
+    x: number;
+    y: number;
+    warzone: number;
   }[];
 }
 
@@ -76,7 +76,7 @@ const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies }) => (
     <h2 className="carousel-title">{title}</h2>
     <div className="carousel-container">
       {movies.map((movie) => (
-        <div key={movie.id} className="carousel-item">
+        <div key={movie.name} className="carousel-item">
           <MovieCard movie={movie} />
         </div>
       ))}
@@ -97,7 +97,7 @@ const MovieList: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      const { data } = await client.models.Movie.list();
+      const { data } = await client.models.Base.list();
       setMovies(data); // Set all movies
       setFilteredMovies(data); // Set filtered movies to all fetched movies initially
     } catch (err) {
@@ -117,12 +117,12 @@ const MovieList: React.FC = () => {
         setFilteredMovies(movies); // Reset to all movies if search query is empty
         return;
       }
-      const { data } = await client.queries.searchMovie({ title: searchQuery });
+      const { data } = await client.queries.searchBase({ q: searchQuery });
       if (data) {
         setFilteredMovies(data!); // Update with the search results
       }
     } catch (err) {
-      console.error("Error searching movies:", err);
+      console.error("Error searching bases:", err);
       setError("Search failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -147,7 +147,7 @@ const MovieList: React.FC = () => {
           <div className="loading-message">Loading...</div>
         ) : (
           <MovieCarousel
-            title="All Movies"
+            title="All Bases"
             movies={filteredMovies} // Show all the filtered movies
           />
         )}
