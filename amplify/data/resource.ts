@@ -1,15 +1,13 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a.schema({
-  Movie: a
+  Base: a
     .model({
-      title: a.string().required(),
-      description: a.string(),
-      releaseYear: a.integer(),
-      director: a.string(),
-      actors: a.string().array(),
-      genre: a.string(),
-      rating: a.float(),
+      name: a.string().required(),
+      warzone: a.integer(),
+      x: a.integer(),
+      y: a.integer(),
+      level: a.integer(),
     })
     .authorization((allow) => [
       allow.owner(),
@@ -17,17 +15,17 @@ const schema = a.schema({
       allow.publicApiKey().to(["read"]),
     ]),
 
-  searchMovie: a
+  searchBase: a
     .query()
     .arguments({
-      title: a.string(),
+      q: a.string(),
     })
-    .returns(a.ref("Movie").array())
+    .returns(a.ref("Base").array())
     .authorization((allow) => [allow.authenticated(), allow.publicApiKey()])
     .handler(
       a.handler.custom({
-        entry: "./searchMovieResolver.js",
-        dataSource: "OpenSearchServerlessDataSource",
+        entry: "./searchBaseResolver.js",
+        dataSource: "ApiGatewaySource",
       })
     ),
 });
