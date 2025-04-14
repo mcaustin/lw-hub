@@ -21,9 +21,9 @@ const backend = defineBackend({
 const openSearchStack = Stack.of(backend.data);
 const region = openSearchStack.region;
 const collectionName = "dynamodb-etl-collection";
-const tableName = backend.data.resources.tables["Movie"].tableName;
-const tableArn = backend.data.resources.tables["Movie"].tableArn;
-const s3BucketArn = backend.storage.resources.bucket.bucketArn;
+// const tableName = backend.data.resources.tables["Movie"].tableName;
+// const tableArn = backend.data.resources.tables["Movie"].tableArn;
+// const s3BucketArn = backend.storage.resources.bucket.bucketArn;
 
 // Get reference to the Movie table from Amplify resources
 // const movieTable =
@@ -170,8 +170,8 @@ openSearchDataSource.grantPrincipal.addToPrincipalPolicy(
 /**
  * Get data source role information
  */
-const httpDataSourceRole = openSearchDataSource.grantPrincipal as iam.Role;
-const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
+//const httpDataSourceRole = openSearchDataSource.grantPrincipal as iam.Role;
+//const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
 
 /**
  * Policy for DynamoDB export operations
@@ -262,32 +262,32 @@ const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
  * - Domain management operations
  * Includes permissions for both domain-level and index-level operations
  */
-const openSearchCollectionPolicy = new iam.PolicyStatement({
-  sid: "allowOpenSearchAccess",
-  effect: iam.Effect.ALLOW,
-  actions: [
-    // Allows batch retrieval of collection information
-    "aoss:BatchGetCollection",
-    // Required for search, index, and administrative operations
-    "aoss:APIAccessAll",
-    // Needed for encryption and network policy validation
-    "aoss:GetSecurityPolicy",
-    // Required for initial setup and scaling operations
-    "aoss:CreateCollection",
-    // Needed for collection discovery and management
-    "aoss:ListCollections",
-    // Required for updating collection settings and configurations
-    "aoss:UpdateCollection",
-    // Needed for cleanup and resource management
-    "aoss:DeleteCollection",
-  ],
+// const openSearchCollectionPolicy = new iam.PolicyStatement({
+//   sid: "allowOpenSearchAccess",
+//   effect: iam.Effect.ALLOW,
+//   actions: [
+//     // Allows batch retrieval of collection information
+//     "aoss:BatchGetCollection",
+//     // Required for search, index, and administrative operations
+//     "aoss:APIAccessAll",
+//     // Needed for encryption and network policy validation
+//     "aoss:GetSecurityPolicy",
+//     // Required for initial setup and scaling operations
+//     "aoss:CreateCollection",
+//     // Needed for collection discovery and management
+//     "aoss:ListCollections",
+//     // Required for updating collection settings and configurations
+//     "aoss:UpdateCollection",
+//     // Needed for cleanup and resource management
+//     "aoss:DeleteCollection",
+//   ],
 
-  resources: [
-    openSearchServerlessCollection.attrArn,
-    `${openSearchServerlessCollection.attrArn}/*`,
-    `*`,
-  ],
-});
+//   resources: [
+//     openSearchServerlessCollection.attrArn,
+//     `${openSearchServerlessCollection.attrArn}/*`,
+//     `*`,
+//   ],
+// });
 
 // Create base role with OpenSearch Ingestion managed policy
 // const openSearchIntegrationPipelineRole = new iam.Role(
@@ -330,72 +330,72 @@ const openSearchCollectionPolicy = new iam.PolicyStatement({
  * Creates a data access policy for OpenSearch Serverless
  * This policy defines who can access what within the collection and its indexes
  */
-const dataAccessPolicy = new oss.CfnAccessPolicy(
-  openSearchStack,
-  "DataAccessPolicy",
-  {
-    name: `ddb-etl-access-policy`,
-    type: "data",
-    description: `Data access policy for ${collectionName} collection`,
-    policy: JSON.stringify([
-      {
-        /**
-         * Collection Level Permissions
-         * - CreateCollectionItems: Required for adding new documents
-         * - DeleteCollectionItems: Required for removing documents
-         * - UpdateCollectionItems: Required for modifying documents
-         * - DescribeCollectionItems: Required for reading documents
-         */
-        Rules: [
-          {
-            ResourceType: "collection",
-            Resource: [`collection/${collectionName}`],
-            Permission: [
-              "aoss:CreateCollectionItems",
-              "aoss:DeleteCollectionItems",
-              "aoss:UpdateCollectionItems",
-              "aoss:DescribeCollectionItems",
-            ],
-          },
-          /**
-           * Index Level Permissions
-           * - ReadDocument: Required for search operations
-           * - WriteDocument: Required for document updates
-           * - CreateIndex: Required for index initialization
-           * - DeleteIndex: Required for index cleanup
-           * - UpdateIndex: Required for index modifications
-           * - DescribeIndex: Required for index metadata
-           */
-          {
-            ResourceType: "index",
-            Resource: [`index/${collectionName}/*`],
-            Permission: [
-              "aoss:ReadDocument",
-              "aoss:WriteDocument",
-              "aoss:CreateIndex",
-              "aoss:DeleteIndex",
-              "aoss:UpdateIndex",
-              "aoss:DescribeIndex",
-            ],
-          },
-        ],
-        Principal: [
-          // ETL Pipeline role
-          //openSearchIntegrationPipelineRole.roleArn,
-          `arn:aws:iam::${openSearchStack.account}:role/Admin`,
-          // AppSync HTTPDataSource role
-          httpDataSourceRoleArn,
-        ],
-      },
-    ]),
-  }
-);
+// const dataAccessPolicy = new oss.CfnAccessPolicy(
+//   openSearchStack,
+//   "DataAccessPolicy",
+//   {
+//     name: `ddb-etl-access-policy`,
+//     type: "data",
+//     description: `Data access policy for ${collectionName} collection`,
+//     policy: JSON.stringify([
+//       {
+//         /**
+//          * Collection Level Permissions
+//          * - CreateCollectionItems: Required for adding new documents
+//          * - DeleteCollectionItems: Required for removing documents
+//          * - UpdateCollectionItems: Required for modifying documents
+//          * - DescribeCollectionItems: Required for reading documents
+//          */
+//         Rules: [
+//           {
+//             ResourceType: "collection",
+//             Resource: [`collection/${collectionName}`],
+//             Permission: [
+//               "aoss:CreateCollectionItems",
+//               "aoss:DeleteCollectionItems",
+//               "aoss:UpdateCollectionItems",
+//               "aoss:DescribeCollectionItems",
+//             ],
+//           },
+//           /**
+//            * Index Level Permissions
+//            * - ReadDocument: Required for search operations
+//            * - WriteDocument: Required for document updates
+//            * - CreateIndex: Required for index initialization
+//            * - DeleteIndex: Required for index cleanup
+//            * - UpdateIndex: Required for index modifications
+//            * - DescribeIndex: Required for index metadata
+//            */
+//           {
+//             ResourceType: "index",
+//             Resource: [`index/${collectionName}/*`],
+//             Permission: [
+//               "aoss:ReadDocument",
+//               "aoss:WriteDocument",
+//               "aoss:CreateIndex",
+//               "aoss:DeleteIndex",
+//               "aoss:UpdateIndex",
+//               "aoss:DescribeIndex",
+//             ],
+//           },
+//         ],
+//         Principal: [
+//           // ETL Pipeline role
+//           //openSearchIntegrationPipelineRole.roleArn,
+//           `arn:aws:iam::${openSearchStack.account}:role/Admin`,
+//           // AppSync HTTPDataSource role
+//           httpDataSourceRoleArn,
+//         ],
+//       },
+//     ]),
+//   }
+// );
 
-// Create Log Group
-const logGroup = new LogGroup(openSearchStack, "LogGroup", {
-  logGroupName: "/aws/vendedlogs/OpenSearchServerlessService/pipelines/dev",
-  removalPolicy: RemovalPolicy.DESTROY,
-});
+// // Create Log Group
+// const logGroup = new LogGroup(openSearchStack, "LogGroup", {
+//   logGroupName: "/aws/vendedlogs/OpenSearchServerlessService/pipelines/dev",
+//   removalPolicy: RemovalPolicy.DESTROY,
+// });
 
 interface OpenSearchConfig {
   tableArn: string;
