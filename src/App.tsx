@@ -47,23 +47,23 @@ const SearchBar: React.FC<SearchBarProps> = ({
 );
 
 // MovieCard Component
-interface MovieCardProps {
-  movie: { name: string; x: number; y: number; warzone: number };
+interface BaseCardProps {
+  base: { name: string; x: number; y: number; warzone: number };
 }
 
-const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
+const BaseCard: React.FC<BaseCardProps> = ({ base }) => (
   <div className="movie-card">
     <div className="overlay">
-      <h3 className="movie-title">{movie.name}</h3>
-      <p className="movie-description">X:{movie.x} Y:{movie.y} Warzone:{movie.warzone}</p>
+      <h3 className="movie-title">{base.name}</h3>
+      <p className="movie-description">X:{base.x} Y:{base.y} Warzone:{base.warzone}</p>
     </div>
   </div>
 );
 
 // MovieCarousel Component
-interface MovieCarouselProps {
+interface BaseCarouselProps {
   title: string;
-  movies: {
+  bases: {
     name: string;
     x: number;
     y: number;
@@ -71,13 +71,13 @@ interface MovieCarouselProps {
   }[];
 }
 
-const MovieCarousel: React.FC<MovieCarouselProps> = ({ title, movies }) => (
+const BaseCarousel: React.FC<BaseCarouselProps> = ({ title, bases }) => (
   <section className="movie-carousel">
     <h2 className="carousel-title">{title}</h2>
     <div className="carousel-container">
-      {movies.map((movie) => (
-        <div key={movie.name} className="carousel-item">
-          <MovieCard movie={movie} />
+      {bases.map((base) => (
+        <div key={base.name} className="carousel-item">
+          <BaseCard base={base} />
         </div>
       ))}
     </div>
@@ -101,8 +101,8 @@ const MovieList: React.FC = () => {
       setMovies(data); // Set all movies
       setFilteredMovies(data); // Set filtered movies to all fetched movies initially
     } catch (err) {
-      console.error("Error fetching movies:", err);
-      setError("Failed to fetch movies. Please try again.");
+      console.error("Error fetching bases:", err);
+      setError("Failed to fetch bases. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -146,9 +146,9 @@ const MovieList: React.FC = () => {
         {isLoading ? (
           <div className="loading-message">Loading...</div>
         ) : (
-          <MovieCarousel
+          <BaseCarousel
             title="All Bases"
-            movies={filteredMovies} // Show all the filtered movies
+            bases={filteredMovies} // Show all the filtered movies
           />
         )}
       </div>
