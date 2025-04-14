@@ -170,8 +170,8 @@ openSearchDataSource.grantPrincipal.addToPrincipalPolicy(
 /**
  * Get data source role information
  */
-//const httpDataSourceRole = openSearchDataSource.grantPrincipal as iam.Role;
-//const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
+const httpDataSourceRole = openSearchDataSource.grantPrincipal as iam.Role;
+const httpDataSourceRoleArn = httpDataSourceRole.roleArn;
 
 /**
  * Policy for DynamoDB export operations
@@ -330,66 +330,66 @@ openSearchDataSource.grantPrincipal.addToPrincipalPolicy(
  * Creates a data access policy for OpenSearch Serverless
  * This policy defines who can access what within the collection and its indexes
  */
-// const dataAccessPolicy = new oss.CfnAccessPolicy(
-//   openSearchStack,
-//   "DataAccessPolicy",
-//   {
-//     name: `ddb-etl-access-policy`,
-//     type: "data",
-//     description: `Data access policy for ${collectionName} collection`,
-//     policy: JSON.stringify([
-//       {
-//         /**
-//          * Collection Level Permissions
-//          * - CreateCollectionItems: Required for adding new documents
-//          * - DeleteCollectionItems: Required for removing documents
-//          * - UpdateCollectionItems: Required for modifying documents
-//          * - DescribeCollectionItems: Required for reading documents
-//          */
-//         Rules: [
-//           {
-//             ResourceType: "collection",
-//             Resource: [`collection/${collectionName}`],
-//             Permission: [
-//               "aoss:CreateCollectionItems",
-//               "aoss:DeleteCollectionItems",
-//               "aoss:UpdateCollectionItems",
-//               "aoss:DescribeCollectionItems",
-//             ],
-//           },
-//           /**
-//            * Index Level Permissions
-//            * - ReadDocument: Required for search operations
-//            * - WriteDocument: Required for document updates
-//            * - CreateIndex: Required for index initialization
-//            * - DeleteIndex: Required for index cleanup
-//            * - UpdateIndex: Required for index modifications
-//            * - DescribeIndex: Required for index metadata
-//            */
-//           {
-//             ResourceType: "index",
-//             Resource: [`index/${collectionName}/*`],
-//             Permission: [
-//               "aoss:ReadDocument",
-//               "aoss:WriteDocument",
-//               "aoss:CreateIndex",
-//               "aoss:DeleteIndex",
-//               "aoss:UpdateIndex",
-//               "aoss:DescribeIndex",
-//             ],
-//           },
-//         ],
-//         Principal: [
-//           // ETL Pipeline role
-//           //openSearchIntegrationPipelineRole.roleArn,
-//           `arn:aws:iam::${openSearchStack.account}:role/Admin`,
-//           // AppSync HTTPDataSource role
-//           httpDataSourceRoleArn,
-//         ],
-//       },
-//     ]),
-//   }
-// );
+const dataAccessPolicy = new oss.CfnAccessPolicy(
+  openSearchStack,
+  "DataAccessPolicy",
+  {
+    name: `ddb-etl-access-policy`,
+    type: "data",
+    description: `Data access policy for ${collectionName} collection`,
+    policy: JSON.stringify([
+      {
+        /**
+         * Collection Level Permissions
+         * - CreateCollectionItems: Required for adding new documents
+         * - DeleteCollectionItems: Required for removing documents
+         * - UpdateCollectionItems: Required for modifying documents
+         * - DescribeCollectionItems: Required for reading documents
+         */
+        Rules: [
+          {
+            ResourceType: "collection",
+            Resource: [`collection/${collectionName}`],
+            Permission: [
+              "aoss:CreateCollectionItems",
+              "aoss:DeleteCollectionItems",
+              "aoss:UpdateCollectionItems",
+              "aoss:DescribeCollectionItems",
+            ],
+          },
+          /**
+           * Index Level Permissions
+           * - ReadDocument: Required for search operations
+           * - WriteDocument: Required for document updates
+           * - CreateIndex: Required for index initialization
+           * - DeleteIndex: Required for index cleanup
+           * - UpdateIndex: Required for index modifications
+           * - DescribeIndex: Required for index metadata
+           */
+          {
+            ResourceType: "index",
+            Resource: [`index/${collectionName}/*`],
+            Permission: [
+              "aoss:ReadDocument",
+              "aoss:WriteDocument",
+              "aoss:CreateIndex",
+              "aoss:DeleteIndex",
+              "aoss:UpdateIndex",
+              "aoss:DescribeIndex"
+            ],
+          },
+        ],
+        Principal: [
+          // ETL Pipeline role
+          //openSearchIntegrationPipelineRole.roleArn,
+          `arn:aws:iam::${openSearchStack.account}:role/Admin`,
+          // AppSync HTTPDataSource role
+          httpDataSourceRoleArn,
+        ],
+      },
+    ]),
+  }
+);
 
 // // Create Log Group
 // const logGroup = new LogGroup(openSearchStack, "LogGroup", {
