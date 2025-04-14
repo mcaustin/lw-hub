@@ -10,12 +10,10 @@ import * as osis from "aws-cdk-lib/aws-osis";
 import * as oss from "aws-cdk-lib/aws-opensearchserverless";
 import { auth } from "./auth/resource";
 import { data } from "./data/resource";
-import { storage } from "./storage/resource";
 
 const backend = defineBackend({
   auth,
   data,
-  storage,
 });
 
 const openSearchStack = Stack.of(backend.data);
