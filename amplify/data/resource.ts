@@ -1,19 +1,13 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 
 const schema = a.schema({
-  Base: a
-    .model({
+  Base: a.customType({
       name: a.string().required(),
       warzone: a.integer(),
       x: a.integer(),
       y: a.integer(),
       level: a.integer(),
-    })
-    .authorization((allow) => [
-      allow.owner(),
-      allow.authenticated().to(["read"]),
-      allow.publicApiKey().to(["read"]),
-    ]),
+    }),
 
   searchBase: a
     .query()
