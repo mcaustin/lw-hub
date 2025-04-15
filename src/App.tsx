@@ -45,14 +45,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
 // MovieCard Component
 interface BaseCardProps {
-  base: { name: string; x: number; y: number; warzone: number };
+  base: { name: string; x: number; y: number; warzone: number; allianceTag: string; level: number; };
 }
 
 const BaseCard: React.FC<BaseCardProps> = ({ base }) => (
   <div className="movie-card">
     <div className="overlay">
-      <h3 className="movie-title">{base.name}</h3>
-      <p className="movie-description">X:{base.x} Y:{base.y} Warzone:{base.warzone}</p>
+      <h3 className="movie-title">{base.allianceTag} {base.name}</h3>
+      <p className="movie-description"><b>Warzone:</b>{base.warzone}</p>
+      <p className="movie-description"><b>Level:</b>{base.level}</p>
+      <p className="movie-description"><b>X:</b>{base.x} <b>Y:</b>{base.y}</p>
     </div>
   </div>
 );
@@ -65,6 +67,8 @@ interface BaseCarouselProps {
     x: number;
     y: number;
     warzone: number;
+    allianceTag: string;
+    level: number;
   }[];
 }
 
@@ -99,6 +103,9 @@ const BaseList: React.FC = () => {
       .then(function (response) {
           console.log(response);
           let data = response.data.hits.hits.map((hit: any) => hit._source);
+          data.forEach((base: any) => {
+              base["allianceTag"] = base.allianceTag ? "[" + base.allianceTag + "]" : ""
+          })
           setFilteredMovies(data)
           setMovies(data); // Set all movies
       })
@@ -124,10 +131,13 @@ const BaseList: React.FC = () => {
         setFilteredMovies(movies); // Reset to all movies if search query is empty
         return;
       }
-      axios.get(baseUrl + '?q=' + searchQuery)
+      axios.get(baseUrl + '?q=' + searchQuery + '*')
       .then(function (response) {
           console.log(response);
           let data = response.data.hits.hits.map((hit: any) => hit._source);
+          data.forEach((base: any) => {
+            base["allianceTag"] = base.allianceTag ? "[" + base.allianceTag + "]" : ""
+        })
           //console.log(`data: ${JSON.stringify(data)}`)
           setFilteredMovies(data)
 
