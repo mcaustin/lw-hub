@@ -2,16 +2,10 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
-import { generateClient } from "aws-amplify/api";
-import { Schema } from "../amplify/data/resource";
 import axios from 'axios';
 
 // Configure Amplify
 Amplify.configure(outputs);
-
-const client = generateClient<Schema>({
-  authMode: "apiKey",
-});
 
 // SearchBar Component
 interface SearchBarProps {
@@ -121,7 +115,7 @@ const MovieList: React.FC = () => {
       axios.get('https://7ixkelduq5.execute-api.us-east-1.amazonaws.com/opensearch-api-test?q=' + searchQuery)
       .then(function (response) {
           console.log(response);
-          let data = response.data.hits.hits.map((hit) => hit._source);
+          let data = response.data.hits.hits.map((hit: any) => hit._source);
           console.log(`data: ${JSON.stringify(data)}`)
           setFilteredMovies(data)
 
