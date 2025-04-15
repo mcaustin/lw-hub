@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Authenticator } from "@aws-amplify/ui-react";
+//import { Authenticator } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 import axios from 'axios';
