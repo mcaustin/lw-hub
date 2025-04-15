@@ -4,6 +4,7 @@ import { Amplify } from "aws-amplify";
 import outputs from "../amplify_outputs.json";
 import { generateClient } from "aws-amplify/api";
 import { Schema } from "../amplify/data/resource";
+import axios from 'axios';
 
 // Configure Amplify
 Amplify.configure(outputs);
@@ -117,10 +118,18 @@ const MovieList: React.FC = () => {
         setFilteredMovies(movies); // Reset to all movies if search query is empty
         return;
       }
-      const { data } = await client.queries.searchBase({ q: searchQuery });
-      if (data) {
-        setFilteredMovies(data!); // Update with the search results
-      }
+      axios.get('https://7ixkelduq5.execute-api.us-east-1.amazonaws.com/opensearch-api-test?q=' + searchQuery)
+      .then(function (response) {
+          console.log(response);
+          let data = response.data.hits.hits.map((hit) => hit._source);
+          console.log(`data: ${JSON.stringify(data)}`)
+          setFilteredMovies(data)
+
+      })
+      .catch(function (error) {
+          console.log(error);
+      });
+
     } catch (err) {
       console.error("Error searching bases:", err);
       setError("Search failed. Please try again.");
@@ -164,7 +173,7 @@ const App: React.FC = () => {
         <div className="app-container">
           <header className="header">
             <div className="header-content">
-              <h1 className="header-title">Movie Collection</h1>
+              <h1 className="header-title">Last War Bases</h1>
               <div className="user-info">
                 {/* <span className="username">{user?.username}</span> */}
                 <button onClick={signOut} className="signout-button">
