@@ -7,6 +7,8 @@ import axios from 'axios';
 // Configure Amplify
 Amplify.configure(outputs);
 
+const baseUrl = "https://7ixkelduq5.execute-api.us-east-1.amazonaws.com/opensearch-api-test"
+
 // SearchBar Component
 interface SearchBarProps {
   query: string;
@@ -79,8 +81,8 @@ const BaseCarousel: React.FC<BaseCarouselProps> = ({ title, bases }) => (
   </section>
 );
 
-// Main MovieList Component
-const MovieList: React.FC = () => {
+// Main BaseList Component
+const BaseList: React.FC = () => {
   const [movies, setMovies] = useState<any[]>([]);
   const [filteredMovies, setFilteredMovies] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -92,9 +94,19 @@ const MovieList: React.FC = () => {
     setIsLoading(true);
     setError("");
     try {
-      //const { data } = await client.models.Base.list();
-      setMovies([]); // Set all movies
-      setFilteredMovies([]); // Set filtered movies to all fetched movies initially
+
+      axios.get(baseUrl + '?q=*')
+      .then(function (response) {
+          console.log(response);
+          let data = response.data.hits.hits.map((hit: any) => hit._source);
+          setFilteredMovies(data)
+          setMovies(data); // Set all movies
+      })
+      .catch(function (error) {
+          console.log(error);
+      });
+      
+
     } catch (err) {
       console.error("Error fetching bases:", err);
       setError("Failed to fetch bases. Please try again.");
@@ -112,11 +124,11 @@ const MovieList: React.FC = () => {
         setFilteredMovies(movies); // Reset to all movies if search query is empty
         return;
       }
-      axios.get('https://7ixkelduq5.execute-api.us-east-1.amazonaws.com/opensearch-api-test?q=' + searchQuery)
+      axios.get(baseUrl + '?q=' + searchQuery)
       .then(function (response) {
           console.log(response);
           let data = response.data.hits.hits.map((hit: any) => hit._source);
-          console.log(`data: ${JSON.stringify(data)}`)
+          //console.log(`data: ${JSON.stringify(data)}`)
           setFilteredMovies(data)
 
       })
@@ -162,25 +174,26 @@ const MovieList: React.FC = () => {
 // App Component
 const App: React.FC = () => {
   return (
-    <Authenticator>
-      {({ signOut }) => (
-        <div className="app-container">
-          <header className="header">
-            <div className="header-content">
-              <h1 className="header-title">Last War Bases</h1>
-              <div className="user-info">
-                {/* <span className="username">{user?.username}</span> */}
-                <button onClick={signOut} className="signout-button">
-                  Sign out
-                </button>
-              </div>
-            </div>
-          </header>
+    <BaseList />
+    // <Authenticator>
+    //   {({ signOut }) => (
+    //     <div className="app-container">
+    //       <header className="header">
+    //         <div className="header-content">
+    //           <h1 className="header-title">Last War Bases</h1>
+    //           <div className="user-info">
+    //             {/* <span className="username">{user?.username}</span> */}
+    //             <button onClick={signOut} className="signout-button">
+    //               Sign out
+    //             </button>
+    //           </div>
+    //         </div>
+    //       </header>
 
-          <MovieList />
-        </div>
-      )}
-    </Authenticator>
+    //       <BaseList />
+    //     </div>
+    //   )}
+    // </Authenticator>
   );
 };
 
