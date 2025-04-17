@@ -168,7 +168,7 @@ const BaseList: React.FC = () => {
         return;
       }
       let url = baseUrl + '?q=' + searchQuery + '*'
-      let warzone = selectedZone.value
+      let warzone = selectedZone?.value
       if (warzone) {
         url = url + "&z=" + warzone
       }
